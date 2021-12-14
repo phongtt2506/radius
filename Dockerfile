@@ -9,7 +9,7 @@
 # 1. docker run -p 80:80 -d lirantal/daloradius
 
 FROM ubuntu:20.04
-MAINTAINER Liran Tal <liran.tal@gmail.com>
+MAINTAINER Liran Tal <phongtt2506@gmail.com>
 
 LABEL Description="daloRADIUS Official Docker based on Ubuntu 20.04 LTS and PHP7." \
 	License="GPLv2" \
@@ -19,7 +19,7 @@ LABEL Description="daloRADIUS Official Docker based on Ubuntu 20.04 LTS and PHP7
 ENV DEBIAN_FRONTEND noninteractive
 
 # default timezone
-#ENV TZ Europe/Vienna
+
 ENV TZ Asia/Ho_Chi_Minh
 # PHP install
 RUN apt-get update \
