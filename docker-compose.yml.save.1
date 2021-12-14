@@ -1,0 +1,67 @@
+version: "3"
+
+services:
+
+  radius-mysql1:
+    image: mariadb:10.3
+    container_name: radius-mysql1
+    restart: unless-stopped
+    environment:
+#      - MYSQL_DATABASE=radius
+#      - MYSQL_USER=demouser
+#      - MYSQL_PASSWORD=1234
+      - MYSQL_ROOT_PASSWORD=radiusrootdbpw
+    volumes:
+      - "./data/mysql:/var/lib/mysql"
+      - "./init:/docker-entrypoint-initdb.d"
+
+  radius1:
+    container_name: radius1
+    build:
+      context: .
+      dockerfile: Dockerfile-freeradius
+    restart: unless-stopped
+    depends_on: 
+      - radius-mysql1
+    ports:
+      - '1812:1812/udp'
+      - '1813:1813/udp'
+    environment:
+      - MYSQL_HOST=radius-mysql1
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=appdb
+      - MYSQL_USER=user1
+      - MYSQL_PASSWORD=1234
+      # Optional settings
+      - DEFAULT_CLIENT_SECRET=testing123
+    volumes:
+      - ./data/freeradius:/data
+    # If you want to disable debug output, remove the command parameter
+    command: -X
+
+  radius-web1:
+    build: .
+    container_name: radius-web1
+    restart: unless-stopped
+    depends_on:
+      - radius1
+      - radius-mysql1
+    ports:
+      - '80:80'
+    environment:
+      - MYSQL_HOST=radius-mysql1
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=appdb
+      - MYSQL_USER=user1
+      - MYSQL_PASSWORD=1234
+      # Optional Settings:
+      - DEFAULT_CLIENT_SECRET=testing123
+      - DEFAULT_FREERADIUS_SERVER=radius
+      - MAIL_SMTPADDR=127.0.0.1
+      - MAIL_PORT=25
+      - MAIL_FROM=root@daloradius.xdsl.by
+      - MAIL_AUTH=
+
+    volumes:
+      - ./data/daloradius:/data
+radius-mysql1

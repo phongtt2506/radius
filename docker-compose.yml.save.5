@@ -1,0 +1,71 @@
+
+ls
+version: "3"
+
+services:
+
+  radius-mysql1:
+    image: mariadb:10.3
+    container_name: radius-mysql1
+    restart: unless-stopped
+    environment:
+#      - MYSQL_DATABASE=radius
+#      - MYSQL_USER=demouser
+#      - MYSQL_PASSWORD=1234
+      - MYSQL_ROOT_PASSWORD=radiusrootdbpw
+    volumes:
+      - "./data/mysql:/var/lib/mysql"
+      - "./init:/docker-entrypoint-initdb.d"
+#################
+
+  radius-phongtt:
+    container_name: radius-phongtt
+    build:
+      context: .
+      dockerfile: Dockerfile-freeradius
+    restart: unless-stopped
+    depends_on:
+      - radius-mysql1
+    ports:
+      - '18120:1812/udp'
+      - '18130:1813/udp'
+    environment:
+      - MYSQL_HOST=radius-mysql1
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=phongttdb
+      - MYSQL_USER=phongttuser
+      - MYSQL_PASSWORD=1234
+      # Optional settings
+      - DEFAULT_CLIENT_SECRET=testing123
+    volumes:
+      - ./data/freeradius-phongtt:/data
+    # If you want to disable debug output, remove the command parameter
+    command: -X
+
+  daloradius-phongtt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: daloradius-phongtt
+    restart: unless-stopped
+    depends_on:
+      - radius-phongtt
+      - radius-mysql1
+    ports:
+      - '8082:80'
+    environment:
+      - MYSQL_HOST=radius-mysql1
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=phongttdb
+      - MYSQL_USER=phongttuser
+      - MYSQL_PASSWORD=1234
+      # Optional Settings:
+      - DEFAULT_CLIENT_SECRET=testing123
+      - DEFAULT_FREERADIUS_SERVER=radius
+      - MAIL_SMTPADDR=127.0.0.1
+      - MAIL_PORT=25
+      - MAIL_FROM=root@daloradius.xdsl.by
+      - MAIL_AUTH=
+
+    volumes:
+      - ./data/daloradius-phongtt:/data

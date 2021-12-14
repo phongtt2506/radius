@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+
+  radius-mysql1:
+    image: mariadb:10.3
+    container_name: radius-mysql1
+    restart: unless-stopped
+    environment:
+#      - MYSQL_DATABASE=radius
+#      - MYSQL_USER=demouser
+#      - MYSQL_PASSWORD=1234
+      - MYSQL_ROOT_PASSWORD=radiusrootdbpw
+    volumes:
+      - "./data/mysql:/var/lib/mysql"
+      - "./init:/docker-entrypoint-initdb.d"
+
+[Quote aid=4547618 time=1639120177][To:2349596]Tran Thanh Phong - (1991)
+3 cái servers sau lưng chị Tâm lâu quá a khg nhớ đánh dấu cái nào là cái nào nữa nên thôi e giúp power off rồi ON lại cả 3 cái giúp a, check thấy đèn card mạng chớp xanh a nghĩ là chắc OK rồi. Thanks Phong[/Quote]

@@ -19,8 +19,8 @@ LABEL Description="daloRADIUS Official Docker based on Ubuntu 20.04 LTS and PHP7
 ENV DEBIAN_FRONTEND noninteractive
 
 # default timezone
-ENV TZ Europe/Vienna
-
+#ENV TZ Europe/Vienna
+ENV TZ Asia/Ho_Chi_Minh
 # PHP install
 RUN apt-get update \
 	&& apt-get install --yes --no-install-recommends \

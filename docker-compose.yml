@@ -7,20 +7,23 @@ services:
     container_name: radius-mysql
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=radius
-      - MYSQL_USER=radius
-      - MYSQL_PASSWORD=radiusdbpw
+#      - MYSQL_DATABASE=radius
+#      - MYSQL_USER=demouser
+#      - MYSQL_PASSWORD=1234
       - MYSQL_ROOT_PASSWORD=radiusrootdbpw
     volumes:
       - "./data/mysql:/var/lib/mysql"
+      - "./init:/docker-entrypoint-initdb.d"
 
-  radius:
-    container_name: radius
+
+#################
+  radius-eva-corp:
+    container_name: radius-eva-corp
     build:
       context: .
       dockerfile: Dockerfile-freeradius
     restart: unless-stopped
-    depends_on: 
+    depends_on:
       - radius-mysql
     ports:
       - '1812:1812/udp'
@@ -28,31 +31,33 @@ services:
     environment:
       - MYSQL_HOST=radius-mysql
       - MYSQL_PORT=3306
-      - MYSQL_DATABASE=radius
-      - MYSQL_USER=radius
-      - MYSQL_PASSWORD=radiusdbpw
+      - MYSQL_DATABASE=evacorpdb
+      - MYSQL_USER=evacorpuser
+      - MYSQL_PASSWORD=1234
       # Optional settings
       - DEFAULT_CLIENT_SECRET=testing123
     volumes:
-      - ./data/freeradius:/data
+      - ./data/freeradius-eva-corp:/data
     # If you want to disable debug output, remove the command parameter
     command: -X
 
-  radius-web:
-    build: .
-    container_name: radius-web
+  daloradius-eva-corp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: daloradius-eva-corp
     restart: unless-stopped
     depends_on:
-      - radius
+      - radius-eva-corp
       - radius-mysql
     ports:
-      - '80:80'
+      - '8081:80'
     environment:
       - MYSQL_HOST=radius-mysql
       - MYSQL_PORT=3306
-      - MYSQL_DATABASE=radius
-      - MYSQL_USER=radius
-      - MYSQL_PASSWORD=radiusdbpw
+      - MYSQL_DATABASE=evacorpdb
+      - MYSQL_USER=evacorpuser
+      - MYSQL_PASSWORD=1234
       # Optional Settings:
       - DEFAULT_CLIENT_SECRET=testing123
       - DEFAULT_FREERADIUS_SERVER=radius
@@ -62,4 +67,59 @@ services:
       - MAIL_AUTH=
 
     volumes:
-      - ./data/daloradius:/data
+      - ./data/daloradius-eva-corp:/data
+
+
+#################
+
+  radius-eva-gvo:
+    container_name: radius-eva-gvo
+    build:
+      context: .
+      dockerfile: Dockerfile-freeradius
+    restart: unless-stopped
+    depends_on:
+      - radius-mysql
+    ports:
+      - '18120:1812/udp'
+      - '18130:1813/udp'
+    environment:
+      - MYSQL_HOST=radius-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=gvodb
+      - MYSQL_USER=gvouser
+      - MYSQL_PASSWORD=1234
+      # Optional settings
+      - DEFAULT_CLIENT_SECRET=testing123
+    volumes:
+      - ./data/freeradius-eva-gvo:/data
+    # If you want to disable debug output, remove the command parameter
+    command: -X
+
+  daloradius-eva-gvo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: daloradius-eva-gvo
+    restart: unless-stopped
+    depends_on:
+      - radius-eva-gvo
+      - radius-mysql
+    ports:
+      - '8082:80'
+    environment:
+      - MYSQL_HOST=radius-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=gvodb
+      - MYSQL_USER=gvouser
+      - MYSQL_PASSWORD=1234
+      # Optional Settings:
+      - DEFAULT_CLIENT_SECRET=testing123
+      - DEFAULT_FREERADIUS_SERVER=radius
+      - MAIL_SMTPADDR=127.0.0.1
+      - MAIL_PORT=25
+      - MAIL_FROM=root@daloradius.xdsl.by
+      - MAIL_AUTH=
+
+    volumes:
+      - ./data/daloradius-eva-gvo:/data

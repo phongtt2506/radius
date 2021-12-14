@@ -1,0 +1,8 @@
+CREATE DATABASE greedb;
+CREATE USER 'greeuser'@'%'
+    IDENTIFIED BY '1234';
+GRANT ALL
+    ON adb.*
+    TO 'greeuser'@'%';
+FLUSH PRIVILEGES;
+

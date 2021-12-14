@@ -19,7 +19,8 @@ LABEL Description="freeradius Docker based on Ubuntu 20.04 LTS, optimized for da
 ENV DEBIAN_FRONTEND noninteractive
 
 # default timezone
-ENV TZ Europe/Vienna
+#ENV TZ Europe/Vienna
+ENV TZ Asia/Ho_Chi_Minh
 
 RUN apt-get update \
 	&& apt-get install --yes --no-install-recommends \
