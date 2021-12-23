@@ -60,11 +60,14 @@
 				//columns by chance
 				if ( (isset($users[0]) && (!empty($users[0])))
 						&& 
-						((isset($users[1]) && (!empty($users[1])))) )
+						((isset($users[1]) && (!empty($users[1]))))
+						&&
+						((isset($users[2]) && (!empty($users[2])))) )
 					{
 
 						$user = trim($dbSocket->escapeSimple($users[0]));
 						$pass = trim($dbSocket->escapeSimple($users[1]));
+						$firstname = trim($dbSocket->escapeSimple($users[2]));
 
 						// perform further cleanup on $pass to make sure it doesn't contain invalid chars like \r\n
 						// whether they are literal or encoded
@@ -91,8 +94,8 @@
 
 						// insert user into userinfo table
 						$sql = "INSERT INTO ".$configValues['CONFIG_DB_TBL_DALOUSERINFO'].
-								" (id,username,creationdate,creationby) ".
-								" VALUES (0, '$user', '$currDate', '$currBy')";
+								" (id,username,firstname,creationdate,creationby) ".
+								" VALUES (0, '$user', '$firstname', '$currDate', '$currBy')";
 						$res = $dbSocket->query($sql);
 						$logDebugSQL .= $sql . "\n";
 						

@@ -6,6 +6,11 @@ services:
     image: mariadb:10.3
     container_name: radius-mysql
     restart: unless-stopped
+    ports:
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
     environment:
 #      - MYSQL_DATABASE=radius
 #      - MYSQL_USER=demouser
